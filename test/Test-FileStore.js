@@ -147,6 +147,24 @@ describe('FileStore', () => {
         });
     });
 
+    describe('create', () => {
+        const invalidReq = { headers: {}, url: STORE_PATH };
+        const req = { headers: { 'upload-length': 1000 }, url: STORE_PATH };
+
+        it('should reject when the directory doesnt exist', () => {
+            const file_store = new FileStore({ path: STORE_PATH });
+            file_store.directory = 'some_new_path';
+            return file_store.remove(req)
+                .should.be.rejected();
+        });
+
+        it('should resolve when the file exists', (done) => {
+            const file_store = new FileStore({ path: STORE_PATH });
+            file_store.create(req).then(file => {
+                file_store.remove(req, file.id).then(done).catch(done)
+            })
+        });
+    });
 
     describe('write', () => {
         it('should reject write streams that cant be opened', () => {
